@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const client = require("./client");
-const { createUser } = require("./users");
+const { createUser} = require("./users");
 //TODO : import create books from books
 
 const users = [
@@ -25,7 +25,7 @@ const users = [
   },
 ];
 
-const {createBook} = require("./books");
+const {createBook, getBooks } = require("./books");
 
 const books = [
     {
@@ -99,8 +99,6 @@ const createTables = async ()=>{
     }
 };
 
-
-
 const insertUsers = async ()=>{
     try{
         for (const user of users){
@@ -138,6 +136,8 @@ const seedDatabase = async()=> {
         console.log("INSERTING BOOKS");
         await insertBooks();
         console.log("BOOKS INSERTED SUCCESSFULLY")
+        console.log("GETTING ALL BOOKS");
+        await getBooks();
     } catch (err) {
         console.log(err);
     } finally {
