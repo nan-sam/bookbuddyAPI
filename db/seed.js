@@ -2,7 +2,9 @@ require("dotenv").config();
 
 const client = require("./client");
 const { createUser} = require("./users");
-//TODO : import create books from books
+const {createBook, getBooks } = require("./books");
+const { createReservation, getReservation } = require("./reservations");
+
 
 const users = [
     {
@@ -25,7 +27,6 @@ const users = [
   },
 ];
 
-const {createBook, getBooks } = require("./books");
 
 const books = [
     {
@@ -68,8 +69,9 @@ const books = [
 
 const dropTables = async () => {
     try {
-        await client.query(`DROP TABLE IF EXISTS users CASCADE`)
-        await client.query(`DROP TABLE IF EXISTS books`)
+        await client.query(`DROP TABLE IF EXISTS users CASCADE`);
+        await client.query(`DROP TABLE IF EXISTS books CASCADE`);
+        await client.query(`DROP TABLE IF EXISTS reservations`)
     } catch (err) {
         console.log(err);
     }
@@ -85,6 +87,7 @@ const createTables = async ()=>{
             email VARCHAR (64) UNIQUE NOT NULL,
             password VARCHAR(255) NOT NULL
      )`);
+
      await client.query(`CREATE TABLE books(
         id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
@@ -94,6 +97,12 @@ const createTables = async ()=>{
         available BOOLEAN DEFAULT true
         )`);
 
+    await client.query(`CREATE TABLE reservations(
+        id SERIAL PRIMARY KEY,
+        booksId INTEGER REFERENCES books(id),
+        userId INTEGER REFERENCES users(id)
+
+      )`)
     }catch (err) {
         console.log(err);
     }
@@ -135,9 +144,8 @@ const seedDatabase = async()=> {
         console.log("USERS ADDED SUCCESSFULLY!");
         console.log("INSERTING BOOKS");
         await insertBooks();
-        console.log("BOOKS INSERTED SUCCESSFULLY")
-        console.log("GETTING ALL BOOKS");
-        await getBooks();
+        await createReservation({userId: 1, booksId: 1});
+        console.log(await getReservation(1))
     } catch (err) {
         console.log(err);
     } finally {
