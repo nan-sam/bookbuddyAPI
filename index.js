@@ -3,7 +3,7 @@ const app = express();
 require("dotenv").config();
 const client = require("./db/client");
 client.connect();
-const PORT = 3000;
+const PORT = process.eventNames.PORT || 3000;
 app.use(express.json());
 
 // We;re registering the routes in /api/index.js =>
